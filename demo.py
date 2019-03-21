@@ -162,15 +162,20 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     gcam = GradCAM(model=model)
     _ = gcam.forward(image)
+    print("1")
 
     gbp = GuidedBackPropagation(model=model)
+    print("2")
     _ = gbp.forward(image)
 
+    print("3")
     for i in range(topk):
         print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
 
         # Grad-CAM
+        print("4")
         gcam.backward(idx=predictions[i][1])
+        print("5")
         region = gcam.generate(target_layer=target_layer)
 
         save_gradcam(
