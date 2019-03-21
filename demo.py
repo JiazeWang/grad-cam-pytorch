@@ -176,6 +176,7 @@ def main(image_path, target_layer, arch, topk, cuda):
                 #print("1")
                 region = gcam.generate(target_layer=target_layer)
                 #print(2)
+                line = line.strip().split("/")[-1]
                 save_gradcam(
                     "results/{}-gradcam-{}.png".format(
                         line, target_layer
