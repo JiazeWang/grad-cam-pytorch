@@ -66,7 +66,7 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     # Synset words
     classes = list()
-    with open("samples/synset_words.txt") as lines:
+    with open("samples/new.txt") as lines:
         for line in lines:
             line = line.strip().split(" ", 1)[1]
             line = line.split(", ", 1)[0].replace(" ", "_")
