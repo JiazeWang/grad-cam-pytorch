@@ -178,7 +178,7 @@ def main(image_path, target_layer, arch, topk, cuda):
                 #print(2)
                 save_gradcam(
                     "results/{}-gradcam-{}.png".format(
-                        arch, target_layer
+                        line, target_layer
                     ),
                     region,
                     raw_image,
