@@ -167,44 +167,44 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     _ = gbp.forward(image)
 
-
+    t = ['ha1', 'p1', 'p2', 'p3']
     for i in range(topk):
         print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
 
         # Grad-CAM
+        for target_layer in range t:
+            gcam.backward(idx=predictions[i][1])
+            #print("1")
+            region = gcam.generate(target_layer=target_layer)
+            #print(2)
+            save_gradcam(
+                "results/{}-gradcam-{}-{}.png".format(
+                    arch, target_layer, classes[predictions[i][1]]
+                ),
+                region,
+                raw_image,
+            )
+            #print(3)
 
-        gcam.backward(idx=predictions[i][1])
-        #print("1")
-        region = gcam.generate(target_layer=target_layer)
-        #print(2)
-        save_gradcam(
-            "results/{}-gradcam-{}-{}.png".format(
-                arch, target_layer, classes[predictions[i][1]]
-            ),
-            region,
-            raw_image,
-        )
-        #print(3)
+            # Guided Backpropagation
+            gbp.backward(idx=predictions[i][1])
+            gradient = gbp.generate()
 
-        # Guided Backpropagation
-        gbp.backward(idx=predictions[i][1])
-        gradient = gbp.generate()
+            # Guided Grad-CAM
+            h, w, _ = gradient.shape
+            region = cv2.resize(region, (w, h))[..., np.newaxis]
+            output = gradient * region
 
-        # Guided Grad-CAM
-        h, w, _ = gradient.shape
-        region = cv2.resize(region, (w, h))[..., np.newaxis]
-        output = gradient * region
-
-        save_gradient(
-            "results/{}-guided-{}.png".format(arch, classes[predictions[i][1]]),
-            gradient,
-        )
-        save_gradient(
-            "results/{}-guided_gradcam-{}-{}.png".format(
-                arch, target_layer, classes[predictions[i][1]]
-            ),
-            output,
-        )
+            save_gradient(
+                "results/{}-guided-{}.png".format(arch, classes[predictions[i][1]]),
+                gradient,
+            )
+            save_gradient(
+                "results/{}-guided_gradcam-{}-{}.png".format(
+                    arch, target_layer, classes[predictions[i][1]]
+                ),
+                output,
+            )
 
 
 if __name__ == "__main__":
