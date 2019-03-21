@@ -52,7 +52,7 @@ model_names = sorted(
 @click.option("-i", "--image-path", type=str, required=True)
 @click.option("-a", "--arch", type=click.Choice(model_names), required=True)
 @click.option("-t", "--target-layer", type=str, required=True)
-@click.option("-k", "--topk", type=int, default=3)
+@click.option("-k", "--topk", type=int, default=1)
 @click.option("--cuda/--no-cuda", default=True)
 def main(image_path, target_layer, arch, topk, cuda):
 
@@ -78,7 +78,6 @@ def main(image_path, target_layer, arch, topk, cuda):
     pickle.load = partial(pickle.load, encoding="latin1")
     pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
     checkpoint = torch.load("hacnn_market_xent.pth.tar", pickle_module=pickle)
-
 
         #checkpoint = torch.load(args.load_weights)
     #checkpoint = torch.load("hacnn_market_xent.pth.tar")
@@ -175,9 +174,9 @@ def main(image_path, target_layer, arch, topk, cuda):
         # Grad-CAM
 
         gcam.backward(idx=predictions[i][1])
-        print("1")
+        #print("1")
         region = gcam.generate(target_layer=target_layer)
-        print(2)
+        #print(2)
         save_gradcam(
             "results/{}-gradcam-{}-{}.png".format(
                 arch, target_layer, classes[predictions[i][1]]
@@ -185,7 +184,7 @@ def main(image_path, target_layer, arch, topk, cuda):
             region,
             raw_image,
         )
-        print(3)
+        #print(3)
 
         # Guided Backpropagation
         gbp.backward(idx=predictions[i][1])
