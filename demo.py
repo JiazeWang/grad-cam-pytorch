@@ -186,8 +186,8 @@ def main(image_path, target_layer, arch, topk, cuda):
                 region = gcam.generate(target_layer=target_layer)
                 #print(2)
                 save_gradcam(
-                    "results/{}-gradcam-{}-{}.png".format(
-                        arch, target_layer, classes[predictions[i][1]]
+                    "results/{}-gradcam-{}.png".format(
+                        arch, target_layer]
                     ),
                     region,
                     raw_image,
@@ -209,7 +209,7 @@ def main(image_path, target_layer, arch, topk, cuda):
                 )
                 save_gradient(
                     "results/{}-guided_gradcam-{}-{}.png".format(
-                        arch, target_layer, classes[predictions[i][1]]
+                        line, target_layer, classes[predictions[i][1]]
                     ),
                     output,
                 )
