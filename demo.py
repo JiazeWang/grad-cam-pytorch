@@ -166,7 +166,7 @@ def main(image_path, target_layer, arch, topk, cuda):
 
         _ = gbp.forward(image)
 
-        t = ['reduction_0', 'reduction_3', 'reduction_4', 'reduction_5','reduction_6','reduction_7']
+        t = ['p1', 'p2', 'p3']
         for i in range(topk):
             print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
 
