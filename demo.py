@@ -88,7 +88,7 @@ def main(image_path, target_layer, arch, topk, cuda):
     model_dict.update(pretrain_dict)
     model.load_state_dict(model_dict)
     """
-    checkpoint = torch.load("model_700.pt")
+    pretrain_dict = torch.load("model_700.pt")
     model_dict = model.state_dict()
     pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict and model_dict[k].size() == v.size()}
     model_dict.update(pretrain_dict)
