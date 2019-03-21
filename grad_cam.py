@@ -126,7 +126,7 @@ class GradCAM(_BaseWrapper):
 
         def forward_hook(module, input, output):
             # Save featuremaps
-            self.fmap_pool[id(module)] = output[0].detach()
+            self.fmap_pool[id(module)] = output.detach()
 
         def backward_hook(module, grad_in, grad_out):
             # Save the gradients correspond to the featuremaps
