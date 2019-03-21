@@ -141,6 +141,7 @@ class GradCAM(_BaseWrapper):
     def _find(self, pool, target_layer):
         for key, value in pool.items():
             for module in self.model.named_modules():
+                print(module)
                 if id(module[1]) == key:
                     if module[0] == target_layer:
                         return value
