@@ -8,7 +8,7 @@
 from __future__ import print_function
 
 import copy
-
+from hacnn import HACNN
 import click
 import cv2
 import numpy as np
@@ -70,13 +70,22 @@ def main(image_path, target_layer, arch, topk, cuda):
             classes.append(line)
 
     # Model from torchvision
-    model = models.__dict__[arch](pretrained=True)
+    model = HACNN()
+    checkpoint = torch.load("hacnn_market_xent.pth.tar")
+    pretrain_dict = checkpoint['state_dict']
+    model_dict = model.state_dict()
+    pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict and model_dict[k].size() == v.size()}
+    model_dict.update(pretrain_dict)
+    model.load_state_dict(model_dict)
+
+    #model = models.__dict__[arch](pretrained=True)
+
     model.to(device)
     model.eval()
 
     # Image preprocessing
     raw_image = cv2.imread(image_path)[..., ::-1]
-    raw_image = cv2.resize(raw_image, (224,) * 2)
+    raw_image = cv2.resize(raw_image, (64, 160) * 2)
     image = transforms.Compose(
         [
             transforms.ToTensor(),
