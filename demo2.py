@@ -18,6 +18,8 @@ from torch.autograd import Variable
 from torchvision import models, transforms
 
 from grad_cam import GradCAM
+from functools import partial
+import pickle
 
 
 def save_gradcam(filename, gcam, raw_image):

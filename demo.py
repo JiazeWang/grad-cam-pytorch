@@ -71,7 +71,12 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     # Model from torchvision
     model = HACNN(num_classes=3)
-    checkpoint = torch.load("hacnn_market_xent.pth.tar")
+    pickle.load = partial(pickle.load, encoding="latin1")
+    pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
+    checkpoint = torch.load("hacnn_market_xent.pth.tar", pickle_module=pickle)
+
+        #checkpoint = torch.load(args.load_weights)
+    #checkpoint = torch.load("hacnn_market_xent.pth.tar")
     pretrain_dict = checkpoint['state_dict']
     model_dict = model.state_dict()
     pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict and model_dict[k].size() == v.size()}
