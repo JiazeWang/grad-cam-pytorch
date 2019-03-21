@@ -361,18 +361,20 @@ class HACNN(nn.Module):
         prelogits_global = self.classifier_global(x_global)
         if self.learn_region:
             prelogits_local = self.classifier_local(x_local)
-        
+
         if self.loss == {'xent'}:
             if self.learn_region:
-                return (prelogits_global, prelogits_local)
+                #return (prelogits_global, prelogits_local)
+                return prelogits_global
             else:
                 return prelogits_global
-        
+
         elif self.loss == {'xent', 'htri'}:
             if self.learn_region:
-                return (prelogits_global, prelogits_local), (x_global, x_local)
+                #return (prelogits_global, prelogits_local), (x_global, x_local)
+
             else:
                 return prelogits_global, x_global
-        
+
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))
