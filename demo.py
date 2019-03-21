@@ -93,6 +93,7 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     model.to(device)
     model.eval()
+    place = []
     with open("samples/new.txt") as lines:
         for line in lines:
             line = line.strip().split(" ", 1)[1]
@@ -103,7 +104,8 @@ def main(image_path, target_layer, arch, topk, cuda):
         for line in lines:
             line = line.strip()
             line = "/mnt/SSD/jzwang/market1501/query/"+line
-    for line in lines:
+            place.append(line)
+    for line in place:
         image_path = line
         raw_image = cv2.imread(image_path)[..., ::-1]
         raw_image = cv2.resize(raw_image, (128, 384))
