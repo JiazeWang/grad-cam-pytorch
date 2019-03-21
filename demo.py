@@ -172,7 +172,7 @@ def main(image_path, target_layer, arch, topk, cuda):
         print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
 
         # Grad-CAM
-        for target_layer in range t:
+        for target_layer in t:
             gcam.backward(idx=predictions[i][1])
             #print("1")
             region = gcam.generate(target_layer=target_layer)
