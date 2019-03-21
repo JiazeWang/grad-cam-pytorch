@@ -137,10 +137,6 @@ def main(image_path, target_layer, arch, topk, cuda):
             bp.backward(idx=predictions[i][1])
             gradient = bp.generate()
 
-            save_gradient(
-                "results/{}-vanilla-{}.png".format(arch, classes[predictions[i][1]]),
-                gradient,
-            )
 
         # Remove all the hook function in the "model"
         bp.remove_hook()
@@ -156,11 +152,6 @@ def main(image_path, target_layer, arch, topk, cuda):
 
             deconv.backward(idx=predictions[i][1])
             gradient = deconv.generate()
-
-            save_gradient(
-                "results/{}-deconvnet-{}.png".format(arch, classes[predictions[i][1]]),
-                gradient,
-            )
 
         deconv.remove_hook()
 
