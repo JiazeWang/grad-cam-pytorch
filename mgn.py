@@ -274,4 +274,5 @@ class MGN(nn.Module):
         predict = torch.cat([lfg_p1, lfg_p2, lfg_p3, lf0_p2, lf1_p2, lf0_p3, lf1_p3, lf2_p3], dim=1)
         g1 = self.fc_g(predict)
         #predict = torch.cat([lfg_p1, lf0_p2, lf1_p2, lf0_p3, lf1_p3, lf2_p3], dim=1)
-        return predict
+        #return predict
+        return g1
