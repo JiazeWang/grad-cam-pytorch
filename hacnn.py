@@ -371,7 +371,7 @@ class HACNN(nn.Module):
 
         elif self.loss == {'xent', 'htri'}:
             if self.learn_region:
-                #return (prelogits_global, prelogits_local), (x_global, x_local)
+                return (prelogits_global, prelogits_local), (x_global, x_local)
 
             else:
                 return prelogits_global, x_global
