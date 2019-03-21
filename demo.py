@@ -187,7 +187,7 @@ def main(image_path, target_layer, arch, topk, cuda):
                 #print(2)
                 save_gradcam(
                     "results/{}-gradcam-{}.png".format(
-                        arch, target_layer]
+                        arch, target_layer
                     ),
                     region,
                     raw_image,
@@ -203,16 +203,6 @@ def main(image_path, target_layer, arch, topk, cuda):
                 region = cv2.resize(region, (w, h))[..., np.newaxis]
                 output = gradient * region
 
-                save_gradient(
-                    "results/{}-guided-{}.png".format(arch, classes[predictions[i][1]]),
-                    gradient,
-                )
-                save_gradient(
-                    "results/{}-guided_gradcam-{}-{}.png".format(
-                        line, target_layer, classes[predictions[i][1]]
-                    ),
-                    output,
-                )
 
 
 if __name__ == "__main__":
