@@ -66,11 +66,7 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     # Synset words
     classes = list()
-    with open("samples/new.txt") as lines:
-        for line in lines:
-            line = line.strip().split(" ", 1)[1]
-            line = line.split(", ", 1)[0].replace(" ", "_")
-            classes.append(line)
+
 
     # Model from torchvision
     model = MGN()
@@ -97,114 +93,124 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     model.to(device)
     model.eval()
-
+    with open("samples/new.txt") as lines:
+        for line in lines:
+            line = line.strip().split(" ", 1)[1]
+            line = line.split(", ", 1)[0].replace(" ", "_")
+            classes.append(line)
     # Image preprocessing
-    raw_image = cv2.imread(image_path)[..., ::-1]
-    raw_image = cv2.resize(raw_image, (128, 384))
-    image = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )(raw_image).unsqueeze(0)
-    image = image.to(device)
+    with open("new.txt") as lines:
+        for line in lines:
+            line = line.strip()
+            line = "/mnt/SSD/jzwang/market1501/query/"+line
+    for line in lines:
+        image_path = line
+        raw_image = cv2.imread(image_path)[..., ::-1]
+        raw_image = cv2.resize(raw_image, (128, 384))
+        image = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ]
+        )(raw_image).unsqueeze(0)
+        image = image.to(device)
 
-    """
-    Common usage:
-    1. Wrap your model with visualization classes defined in grad_cam.py
-    2. Run forward() with an image
-    3. Run backward() with a specific class
-    4. Run generate() to export result
-    """
+        """
+        Common usage:
+        1. Wrap your model with visualization classes defined in grad_cam.py
+        2. Run forward() with an image
+        3. Run backward() with a specific class
+        4. Run generate() to export result
+        """
 
-    # =========================================================================
-    print("Vanilla Backpropagation")
+        # =========================================================================
+        print("Vanilla Backpropagation")
 
-    bp = BackPropagation(model=model)
-    predictions = bp.forward(image)
+        bp = BackPropagation(model=model)
+        predictions = bp.forward(image)
 
-    for i in range(topk):
-        print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
+        for i in range(topk):
+            print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
 
-        bp.backward(idx=predictions[i][1])
-        gradient = bp.generate()
-
-        save_gradient(
-            "results/{}-vanilla-{}.png".format(arch, classes[predictions[i][1]]),
-            gradient,
-        )
-
-    # Remove all the hook function in the "model"
-    bp.remove_hook()
-
-    # =========================================================================
-    print("Deconvolution")
-
-    deconv = Deconvnet(model=model)
-    _ = deconv.forward(image)
-
-    for i in range(topk):
-        print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
-
-        deconv.backward(idx=predictions[i][1])
-        gradient = deconv.generate()
-
-        save_gradient(
-            "results/{}-deconvnet-{}.png".format(arch, classes[predictions[i][1]]),
-            gradient,
-        )
-
-    deconv.remove_hook()
-
-    # =========================================================================
-    print("Grad-CAM/Guided Backpropagation/Guided Grad-CAM")
-
-    gcam = GradCAM(model=model)
-    _ = gcam.forward(image)
-
-
-    gbp = GuidedBackPropagation(model=model)
-
-    _ = gbp.forward(image)
-
-    t = ['ha1', 'p1', 'p2', 'p3']
-    for i in range(topk):
-        print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
-
-        # Grad-CAM
-        for target_layer in t:
-            gcam.backward(idx=predictions[i][1])
-            #print("1")
-            region = gcam.generate(target_layer=target_layer)
-            #print(2)
-            save_gradcam(
-                "results/{}-gradcam-{}-{}.png".format(
-                    arch, target_layer, classes[predictions[i][1]]
-                ),
-                region,
-                raw_image,
-            )
-            #print(3)
-
-            # Guided Backpropagation
-            gbp.backward(idx=predictions[i][1])
-            gradient = gbp.generate()
-
-            # Guided Grad-CAM
-            h, w, _ = gradient.shape
-            region = cv2.resize(region, (w, h))[..., np.newaxis]
-            output = gradient * region
+            bp.backward(idx=predictions[i][1])
+            gradient = bp.generate()
 
             save_gradient(
-                "results/{}-guided-{}.png".format(arch, classes[predictions[i][1]]),
+                "results/{}-vanilla-{}.png".format(arch, classes[predictions[i][1]]),
                 gradient,
             )
+
+        # Remove all the hook function in the "model"
+        bp.remove_hook()
+
+        # =========================================================================
+        print("Deconvolution")
+
+        deconv = Deconvnet(model=model)
+        _ = deconv.forward(image)
+
+        for i in range(topk):
+            print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
+
+            deconv.backward(idx=predictions[i][1])
+            gradient = deconv.generate()
+
             save_gradient(
-                "results/{}-guided_gradcam-{}-{}.png".format(
-                    arch, target_layer, classes[predictions[i][1]]
-                ),
-                output,
+                "results/{}-deconvnet-{}.png".format(arch, classes[predictions[i][1]]),
+                gradient,
             )
+
+        deconv.remove_hook()
+
+        # =========================================================================
+        print("Grad-CAM/Guided Backpropagation/Guided Grad-CAM")
+
+        gcam = GradCAM(model=model)
+        _ = gcam.forward(image)
+
+
+        gbp = GuidedBackPropagation(model=model)
+
+        _ = gbp.forward(image)
+
+        t = ['ha1', 'p1', 'p2', 'p3']
+        for i in range(topk):
+            print("[{:.5f}] {}".format(predictions[i][0], classes[predictions[i][1]]))
+
+            # Grad-CAM
+            for target_layer in t:
+                gcam.backward(idx=predictions[i][1])
+                #print("1")
+                region = gcam.generate(target_layer=target_layer)
+                #print(2)
+                save_gradcam(
+                    "results/{}-gradcam-{}-{}.png".format(
+                        arch, target_layer, classes[predictions[i][1]]
+                    ),
+                    region,
+                    raw_image,
+                )
+                #print(3)
+
+                # Guided Backpropagation
+                gbp.backward(idx=predictions[i][1])
+                gradient = gbp.generate()
+
+                # Guided Grad-CAM
+                h, w, _ = gradient.shape
+                region = cv2.resize(region, (w, h))[..., np.newaxis]
+                output = gradient * region
+
+                save_gradient(
+                    "results/{}-guided-{}.png".format(arch, classes[predictions[i][1]]),
+                    gradient,
+                )
+                save_gradient(
+                    "results/{}-guided_gradcam-{}-{}.png".format(
+                        arch, target_layer, classes[predictions[i][1]]
+                    ),
+                    output,
+                )
 
 
 if __name__ == "__main__":
