@@ -17,6 +17,8 @@ from torch.autograd import Variable
 from torchvision import models, transforms
 
 from grad_cam import BackPropagation, Deconvnet, GradCAM, GuidedBackPropagation
+from functools import partial
+import pickle
 
 # if a model includes LSTM, such as in image captioning,
 # torch.backends.cudnn.enabled = False
