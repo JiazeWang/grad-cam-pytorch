@@ -101,7 +101,8 @@ def main(image_path, target_layer, arch, topk, cuda):
 
     # Image preprocessing
     raw_image = cv2.imread(image_path)[..., ::-1]
-    raw_image = cv2.resize(raw_image, (128, 384))
+#    raw_image = cv2.resize(raw_image, (128, 384))
+    raw_image = cv2.resize(raw_image, (64, 160))
     image = transforms.Compose(
         [
             transforms.ToTensor(),
