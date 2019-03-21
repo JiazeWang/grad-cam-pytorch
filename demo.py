@@ -9,6 +9,7 @@ from __future__ import print_function
 
 import copy
 from hacnn import HACNN
+from mgn import MGN
 import click
 import cv2
 import numpy as np
@@ -72,14 +73,22 @@ def main(image_path, target_layer, arch, topk, cuda):
             classes.append(line)
 
     # Model from torchvision
-    model = HACNN(num_classes=3)
+    model = MGN()
+    """
     pickle.load = partial(pickle.load, encoding="latin1")
     pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
     checkpoint = torch.load("hacnn_market_xent.pth.tar", pickle_module=pickle)
 
+
         #checkpoint = torch.load(args.load_weights)
     #checkpoint = torch.load("hacnn_market_xent.pth.tar")
     pretrain_dict = checkpoint['state_dict']
+    model_dict = model.state_dict()
+    pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict and model_dict[k].size() == v.size()}
+    model_dict.update(pretrain_dict)
+    model.load_state_dict(model_dict)
+    """
+    checkpoint = torch.load("model_700.pt")
     model_dict = model.state_dict()
     pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict and model_dict[k].size() == v.size()}
     model_dict.update(pretrain_dict)
