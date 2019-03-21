@@ -70,7 +70,7 @@ def main(image_path, target_layer, arch, topk, cuda):
             classes.append(line)
 
     # Model from torchvision
-    model = HACNN()
+    model = HACNN(num_classes=3)
     checkpoint = torch.load("hacnn_market_xent.pth.tar")
     pretrain_dict = checkpoint['state_dict']
     model_dict = model.state_dict()
